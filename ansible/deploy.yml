@@ -1,0 +1,37 @@
+---
+- name: Configure and Deploy Web Server
+  hosts: webservers
+  become: true
+
+  tasks:
+    - name: Update package cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install Nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+
+    - name: Copy website HTML file
+      ansible.builtin.copy:
+        src: ../website/index.html
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copy website CSS file
+      ansible.builtin.copy:
+        src: ../website/style.css
+        dest: /var/www/html/style.css
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Ensure Nginx is running
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
